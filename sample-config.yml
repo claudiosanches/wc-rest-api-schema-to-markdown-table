@@ -1,0 +1,5 @@
+api:
+  url: "https://example.com"
+  consumerKey: "ck_xxxxxxxxxxxxxxxxx"
+  consumerSecret: "cs_xxxxxxxxxxxxxx"
+  version: "v2"
