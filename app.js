@@ -57,7 +57,7 @@ Generator.prototype.getParametersTable = function(data) {
 };
 
 Generator.prototype.getName = function() {
-  return this.endpoint.toString().replace(/\_/g, ' ').replace(/(\/.+\/)/, ' ').capitalize();
+  return this.endpoint.toString().replace(/\_/g, ' ').replace(/(s\/.+\/)/, ' ').capitalize();
 };
 
 Generator.prototype.getSectionName = function(value) {
