@@ -9,7 +9,7 @@ var fs     = require('fs');
 var promptSchema = {
   properties: {
     endpoint: {
-      pattern: /^[a-z\_]+$/,
+      pattern: /^[a-z1-9\/\_]+$/,
       message: 'Name must be only letters and underline',
       required: true
     }
@@ -57,7 +57,7 @@ Generator.prototype.getParametersTable = function(data) {
 };
 
 Generator.prototype.getName = function() {
-  return this.endpoint.toString().replace(/\_/g, ' ').capitalize();
+  return this.endpoint.toString().replace(/\_/g, ' ').replace(/(\/.+\/)/, ' ').capitalize();
 };
 
 Generator.prototype.getSectionName = function(value) {
@@ -119,7 +119,7 @@ Generator.prototype.getContent = function(json) {
   var requestParams = null;
   var schema        = data.schema.properties;
 
-  if ('GET' === data.endpoints[0].methods.toString()) {
+  if ('GET' === data.endpoints[0].methods.toString() && data.endpoints[1]) {
     queryParams   = data.endpoints[0].args;
     requestParams = data.endpoints[1].args;
   } else {
@@ -136,10 +136,15 @@ Generator.prototype.getContent = function(json) {
 
       if (value.properties || value.items && value.items.properties) {
         var properties = value.properties || value.items.properties;
+        var itemParams = null;
+
+        if (requestParams[index]) {
+          itemParams = requestParams[index].items;
+        }
 
         text += '\n\n';
         text += '### ' + self.getSectionName(index) + ' ###\n\n';
-        text += self.getAttributeTable(properties, requestParams[index].items);
+        text += self.getAttributeTable(properties, itemParams);
       }
     }
   }
