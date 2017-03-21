@@ -67,7 +67,7 @@ Generator.prototype.getSectionName = function(value) {
 Generator.prototype.getSectionURL = function(value) {
   var text = this.getSectionName(value);
 
-  return text.toString().toLowerCase().replace(/\s/g, '-');
+  return text.toString().toLowerCase().replace(/\s/g, '-').replace('---', '-');
 };
 
 Generator.prototype.getItemDescription = function(item, id, params) {
@@ -105,7 +105,7 @@ Generator.prototype.getItemDescription = function(item, id, params) {
 
   // Added "See [link]".
   if (item.properties || item.items && item.items.properties) {
-    text += ' See [' + self.getSectionName(id) + '](' + self.getSectionURL(id) + ')';
+    text += ' See [' + self.getSectionName(id) + '](#' + self.getSectionURL(id) + ')';
   }
 
   return text;
