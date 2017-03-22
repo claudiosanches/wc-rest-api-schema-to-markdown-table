@@ -1,10 +1,11 @@
 'use strict';
 
-var API    = require('woocommerce-api');
-var table  = require('markdown-table');
-var config = require('config-yml');
-var prompt = require('prompt');
-var fs     = require('fs');
+var API        = require('woocommerce-api');
+var table      = require('markdown-table');
+var config     = require('config-yml');
+var prompt     = require('prompt');
+var fs         = require('fs');
+var inflection = require( 'inflection' );
 
 var promptSchema = {
   properties: {
@@ -57,7 +58,14 @@ Generator.prototype.getParametersTable = function(data) {
 };
 
 Generator.prototype.getName = function() {
-  return this.endpoint.toString().replace(/\_/g, ' ').replace(/(s\/.+\/)/, ' ').capitalize();
+  var string = [];
+  var words = this.endpoint.toString().replace(/\_/g, ' ').replace(/(\/.+\/)/, ' ').replace(/\//g, ' ').capitalize().split(' ');
+
+  words.forEach(function(value) {
+    string.push(inflection.singularize(value));
+  });
+
+  return string.join(' ');
 };
 
 Generator.prototype.getSectionName = function(value) {
@@ -88,6 +96,11 @@ Generator.prototype.getItemDescription = function(item, id, params) {
     text += ' Default is `' + item.default + '`.';
   }
 
+  // Added "See [link]".
+  if (item.properties || item.items && item.items.properties) {
+    text += ' See [' + self.getSectionName(id) + '](#' + self.getSectionURL(id) + ')';
+  }
+
   // Read-only flag.
   if (true === item.readonly) {
     text += ' <i class="label label-info">read-only</i>';
@@ -101,11 +114,6 @@ Generator.prototype.getItemDescription = function(item, id, params) {
   // Mandatory flag.
   if (params && params[id] && true === params[id].required) {
     text += ' <i class="label label-info">mandatory</i>';
-  }
-
-  // Added "See [link]".
-  if (item.properties || item.items && item.items.properties) {
-    text += ' See [' + self.getSectionName(id) + '](#' + self.getSectionURL(id) + ')';
   }
 
   return text;
